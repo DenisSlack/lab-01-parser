@@ -26,6 +26,9 @@ string(APPEND CMAKE_CXX_FLAGS " -Wshadow -Wnon-virtual-dtor")
 
 hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
+hunter_add_package(nlohmann_json)
+find_package(nlohmann_json CONFIG REQUIRED)
+
 
 
 add_library(${PROJECT_NAME} STATIC
@@ -74,9 +77,6 @@ add_library(Json STATIC sources/json.cpp)
 add_executable(main sources/main.cpp)
 add_executable(task3 sources/task3.cpp)
 target_link_libraries(main Json)
-
-hunter_add_package(nlohmann_json)
-find_package(nlohmann_json CONFIG REQUIRED)
 
 
 target_link_libraries(task3 PUBLIC nlohmann_json::nlohmann_json)
