@@ -26,35 +26,48 @@ string(APPEND CMAKE_CXX_FLAGS " -Wshadow -Wnon-virtual-dtor")
 
 hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
-hunter_add_package(nlohmann_json)
-find_package(nlohmann_json CONFIG REQUIRED)
-
 
 
 add_library(${PROJECT_NAME} STATIC
+        # enum your files and delete this comment
         ${CMAKE_CURRENT_SOURCE_DIR}/sources/json.cpp
-        sources/json.cpp sources/task3.cpp)
-
+        #   json.h
+        #   ${CMAKE_CURRENT_SOURCE_DIR}/sources/source.cpp
+        )
 add_executable(tests
+        # TODO: enum your files and delete this comment
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/test.cpp
+
         ${CMAKE_CURRENT_SOURCE_DIR}/sources/json.cpp
         )
 
+#find_library(
+#    GTEST_LOCAL_LIB
+#    NAMES gtest
+#    PATHS ${GTEST_ROOT}/lib
+#)
+
+#find_library(
+#    GTEST_LOCAL_LIB_MAIN
+#    NAMES gtest_main
+#    PATHS ${GTEST_ROOT}/lib
+#)
 
 target_include_directories(json
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
         )
-
 target_include_directories(tests
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${GTEST_ROOT}/include
         )
 
-
+# target_link_libraries(tests GTest::main json)
 
 target_link_libraries(tests
         pthread
         ${PROJECT_NAME}
+        #    ${GTEST_LOCAL_LIB}
+        #    ${GTEST_LOCAL_LIB_MAIN}
         GTest::gtest
         GTest::main
         )
@@ -72,11 +85,12 @@ if(BUILD_COVERAGE)
   list(APPEND LCOV_REMOVE_PATTERNS "'${PROJECT_SOURCE_DIR}/tests/*'")
   coverage_evaluate()
 endif()
-
 add_library(Json STATIC sources/json.cpp)
 add_executable(main sources/main.cpp)
 add_executable(task3 sources/task3.cpp)
 target_link_libraries(main Json)
 
+hunter_add_package(nlohmann_json)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 target_link_libraries(task3 PUBLIC nlohmann_json::nlohmann_json)
