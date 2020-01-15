@@ -1,0 +1,8 @@
+/home/denis/CLionProjects/lab-01-JSON/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/denis/CLionProjects/lab-01-JSON/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/denis/CLionProjects/lab-01-JSON/cmake-build-debug/CMakeFiles/tests.dir
+/home/denis/CLionProjects/lab-01-JSON/cmake-build-debug/CMakeFiles/task3.dir
+/home/denis/CLionProjects/lab-01-JSON/cmake-build-debug/CMakeFiles/json.dir
+/home/denis/CLionProjects/lab-01-JSON/cmake-build-debug/CMakeFiles/main.dir
+/home/denis/CLionProjects/lab-01-JSON/cmake-build-debug/CMakeFiles/Json.dir
+/home/denis/CLionProjects/lab-01-JSON/cmake-build-debug/CMakeFiles/test.dir

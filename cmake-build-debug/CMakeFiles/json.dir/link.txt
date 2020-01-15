@@ -1,0 +1,2 @@
+/usr/bin/ar qc libjsond.a  CMakeFiles/json.dir/sources/json.cpp.o CMakeFiles/json.dir/sources/task3.cpp.o
+/usr/bin/ranlib libjsond.a

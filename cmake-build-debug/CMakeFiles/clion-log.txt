@@ -1,0 +1,125 @@
+/usr/local/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/denis/CLionProjects/lab-01-JSON
+-- [hunter] Calculating Toolchain-SHA1
+-- [hunter] Calculating Config-SHA1
+-- [hunter] HUNTER_ROOT: /home/denis/.hunter
+-- [hunter] [ Hunter-ID: 70287b1 | Toolchain-ID: 511a137 | Config-ID: dffbc08 ]
+-- [hunter] GTEST_ROOT: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Install (ver.: 1.8.0-hunter-p11)
+-- [hunter] NLOHMANN_JSON_ROOT: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Install (ver.: 3.3.0)
+-- [hunter] Building nlohmann_json
+loading initial cache file /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/cache.cmake
+loading initial cache file /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/args.cmake
+-- The C compiler identification is GNU 7.4.0
+-- The CXX compiler identification is GNU 7.4.0
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Build
+Scanning dependencies of target nlohmann_json-Release
+[  6%] Creating directories for 'nlohmann_json-Release'
+[ 12%] Performing download step (download, verify and extract) for 'nlohmann_json-Release'
+-- verifying file...
+       file='/home/denis/.hunter/_Base/Download/nlohmann_json/3.3.0/90842f0/v3.3.0.tar.gz'
+-- SHA1 hash of
+    /home/denis/.hunter/_Base/Download/nlohmann_json/3.3.0/90842f0/v3.3.0.tar.gz
+  does not match expected value
+    expected: '90842f04aadc1af1af600ce84c7fbe0d1dfc3d3c'
+      actual: '5f784f6258b59e39bf0122277812cf589d7b0c19'
+-- File already exists but hash mismatch. Removing...
+-- Downloading...
+   dst='/home/denis/.hunter/_Base/Download/nlohmann_json/3.3.0/90842f0/v3.3.0.tar.gz'
+   timeout='none'
+-- Using src='https://github.com/nlohmann/json/archive/v3.3.0.tar.gz'
+-- verifying file...
+       file='/home/denis/.hunter/_Base/Download/nlohmann_json/3.3.0/90842f0/v3.3.0.tar.gz'
+-- Downloading... done
+-- extracting...
+     src='/home/denis/.hunter/_Base/Download/nlohmann_json/3.3.0/90842f0/v3.3.0.tar.gz'
+     dst='/home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Source'
+-- extracting... [tar xfz]
+-- extracting... [analysis]
+-- extracting... [rename]
+-- extracting... [clean up]
+-- extracting... done
+[ 18%] No patch step for 'nlohmann_json-Release'
+[ 25%] No update step for 'nlohmann_json-Release'
+[ 31%] Performing configure step for 'nlohmann_json-Release'
+loading initial cache file /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/cache.cmake
+loading initial cache file /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/args.cmake
+-- The CXX compiler identification is GNU 7.4.0
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Using the single-header code from /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Source/single_include/
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Build/nlohmann_json-Release-prefix/src/nlohmann_json-Release-build
+[ 37%] Performing build step for 'nlohmann_json-Release'
+[ 43%] Performing install step for 'nlohmann_json-Release'
+Install the project...
+-- Install configuration: "Release"
+-- Installing: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Install/include
+-- Installing: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Install/include/nlohmann
+-- Installing: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Install/include/nlohmann/json.hpp
+-- Installing: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Install/lib/cmake/nlohmann_json/nlohmann_jsonConfig.cmake
+-- Installing: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Install/lib/cmake/nlohmann_json/nlohmann_jsonConfigVersion.cmake
+-- Installing: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Install/lib/cmake/nlohmann_json/nlohmann_jsonTargets.cmake
+loading initial cache file /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/args.cmake
+[ 50%] Completed 'nlohmann_json-Release'
+[ 50%] Built target nlohmann_json-Release
+Scanning dependencies of target nlohmann_json-Debug
+[ 56%] Creating directories for 'nlohmann_json-Debug'
+[ 62%] Performing download step (download, verify and extract) for 'nlohmann_json-Debug'
+-- verifying file...
+       file='/home/denis/.hunter/_Base/Download/nlohmann_json/3.3.0/90842f0/v3.3.0.tar.gz'
+-- File already exists and hash match (skip download):
+  file='/home/denis/.hunter/_Base/Download/nlohmann_json/3.3.0/90842f0/v3.3.0.tar.gz'
+  SHA1='90842f04aadc1af1af600ce84c7fbe0d1dfc3d3c'
+-- extracting...
+     src='/home/denis/.hunter/_Base/Download/nlohmann_json/3.3.0/90842f0/v3.3.0.tar.gz'
+     dst='/home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Source'
+-- extracting... [tar xfz]
+-- extracting... [analysis]
+-- extracting... [rename]
+-- extracting... [clean up]
+-- extracting... done
+[ 68%] No patch step for 'nlohmann_json-Debug'
+[ 75%] No update step for 'nlohmann_json-Debug'
+[ 81%] Performing configure step for 'nlohmann_json-Debug'
+loading initial cache file /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/cache.cmake
+loading initial cache file /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/args.cmake
+-- The CXX compiler identification is GNU 7.4.0
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Using the single-header code from /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Source/single_include/
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Build/nlohmann_json-Debug-prefix/src/nlohmann_json-Debug-build
+[ 87%] Performing build step for 'nlohmann_json-Debug'
+[ 93%] Performing install step for 'nlohmann_json-Debug'
+Install the project...
+-- Install configuration: "Debug"
+-- Up-to-date: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Install/include
+-- Up-to-date: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Install/include/nlohmann
+-- Up-to-date: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Install/include/nlohmann/json.hpp
+-- Installing: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Install/lib/cmake/nlohmann_json/nlohmann_jsonConfig.cmake
+-- Installing: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Install/lib/cmake/nlohmann_json/nlohmann_jsonConfigVersion.cmake
+-- Installing: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/Install/lib/cmake/nlohmann_json/nlohmann_jsonTargets.cmake
+loading initial cache file /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json/args.cmake
+[100%] Completed 'nlohmann_json-Debug'
+[100%] Built target nlohmann_json-Debug
+-- [hunter] Build step successful (dir: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Build/nlohmann_json)
+-- [hunter] Cache saved: /home/denis/.hunter/_Base/Cache/raw/0ffed91d66d8bf8cbb724b5a198be60f3ce3e6c7.tar.bz2
+-- Found nlohmann_json: /home/denis/.hunter/_Base/70287b1/511a137/dffbc08/Install/lib/cmake/nlohmann_json/nlohmann_jsonConfig.cmake (found version "3.3.0") 
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/denis/CLionProjects/lab-01-JSON/cmake-build-debug
