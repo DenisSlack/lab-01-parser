@@ -1,4 +1,4 @@
-
+// Copyright 2020 Stitch
 #include <any>
 #include <fstream>
 #include <iostream>

@@ -1,3 +1,4 @@
+// Copyright 2020 Stitch
 #include "../include/json.h"
 
 #include <exception>

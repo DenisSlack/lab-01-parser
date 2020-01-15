@@ -78,4 +78,5 @@ target_link_libraries(main Json)
 hunter_add_package(nlohmann_json)
 find_package(nlohmann_json CONFIG REQUIRED)
 
+
 target_link_libraries(task3 PUBLIC nlohmann_json::nlohmann_json)

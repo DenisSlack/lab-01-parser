@@ -1,5 +1,5 @@
+// Copyright 2020 Stitch
 #include <iostream>
-
 #include "../../../.hunter/_Base/70287b1/511a137/dffbc08/Install/include/nlohmann/json.hpp"
 using json = nlohmann::json;
 
