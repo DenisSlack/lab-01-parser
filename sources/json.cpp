@@ -1,6 +1,6 @@
 // Copyright 2019  Dimontich
 
-#include "../include/Json.h"
+#include "../include/json.h"
 
 void Json::check_str(const std::string& s) {
   int f = s.find_first_of("{["), l = s.find_last_of("}]");
