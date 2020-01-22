@@ -1,419 +1,363 @@
-// Copyright 2020 Stitch
-#include "../include/json.h"
+// Copyright 2019  Dimontich
 
-#include <exception>
-#include <fstream>
-#include <iostream>  //marker
+#include "../include/Json.h"
 
-const std::string TypeError = "Error: type mismatch";
-const std::string SyntaxError = "Error: wrond syntax";
-const std::string CharName = "c";
-const std::string NullName = "n";
-
-std::ostream& operator<<(std::ostream& stream, const std::any& object) {
-  try {
-    stream << std::any_cast<int>(object);
-    return stream;
-  } catch (const std::exception&) {
+void Json::check_str(const std::string& s) {
+  int f = s.find_first_of("{["), l = s.find_last_of("}]");
+  if ((f == -1) || (l == -1)) throw std::exception();
+  if (s[f] == '{') {
+    if (s[l] != '}') throw std::exception();
+  } else if (s[l] != ']') {
+    throw std::exception();
   }
-  try {
-    stream << std::any_cast<float>(object);
-    return stream;
-  } catch (const std::exception&) {
-  }
-  try {
-    stream << std::any_cast<double>(object);
-    return stream;
-  } catch (const std::exception&) {
-  }
-  try {
-    stream << std::any_cast<bool>(object);
-    return stream;
-  } catch (const std::exception&) {
-  }
-  try {
-    std::any_cast<std::vector<std::any>>(object);
-    stream << "vector";
-
-    return stream;
-  } catch (const std::exception&) {
-  }
-  try {
-    stream << std::any_cast<std::string>(object);
-    return stream;
-  } catch (const std::exception&) {
-  }
-  try {
-    stream << std::any_cast<char>(object);
-    return stream;
-  } catch (const std::exception&) {
-  }
-  try {
-    std::any_cast<Json>(object);
-    stream << "Json";
-
-    return stream;
-  } catch (const std::exception&) {
-  }
-
-  return stream;
 }
 
-// Вспомогательные функции
-bool IntNotDouble(const std::string text_number) {
-  auto iter = text_number.begin();
-
-  if (isdigit(*iter))
-    while (iter != text_number.begin() && isdigit(*iter)) iter++;
-  else
+void Json::check_whitespace(const std::string& s) {
+  if (static_cast<int>(s.find_first_not_of(" \n\t")) != -1)
     throw std::exception();
-
-  if (*iter == '.')
-    return 0;  // Int
-  else
-    return 1;  // Double
 }
-std::string GetTextNumber(std::string& str) {
-  std::string text_number = "";
-  auto iter = str.begin();
 
-  if (*iter == '-') {
-    text_number += "-";
-    iter++;
-  }
+int Json::get_int(const std::string& s) { return std::stoi(s); }
 
-  if (isdigit(*iter))
-    while (iter != str.end() && isdigit(*iter)) {
-      text_number += *iter;
-      iter++;
-    }
-  else
+double Json::get_double(const std::string& s) { return std::stod(s); }
+
+bool Json::get_bool(const std::string& s, int& b) {
+  if (s.substr(0, 4) == "true") {
+    b += 3;
+    return true;
+  } else if (s.substr(0, 5) == "false") {
+    b += 4;
+    return false;
+  } else{
     throw std::exception();
+  }
+}
 
-  if (*iter == '.') {
-    text_number += '.';
-    iter++;
-    if (isdigit(*iter))
-      while (iter != str.end() && isdigit(*iter)) {
-        text_number += *iter;
-        iter++;
-      }
-    else
+int Json::find_end(const std::string& s, char close) {
+  int x = 0, count_open = 1, count_close = 0;
+  char open;
+  if (close == '}')
+    open = '{';
+  else
+    open = '[';
+  std::string str;
+  str.push_back(open);
+  str.push_back(close);
+  while (count_open != count_close) {
+    x++;
+    if (static_cast<int>(s.substr(x).find_first_of(str)) != -1) {
+      x = static_cast<int>(s.substr(x).find_first_of(str) + x);
+      if (s[x] == open)
+        count_open++;
+      else
+        count_close++;
+    } else {
       throw std::exception();
-  }
-  return text_number;
-}
-
-// Функции для обработки токенов различных типов
-std::string GetString(std::string& str) {
-  std::string res_str = "";
-  if (str[0] == '"') {
-    auto iter = str.begin() + 1;
-
-    while (iter != str.end() && *iter != '"') {
-      res_str += *iter;
-      iter++;
     }
-
-    if (iter == str.end()) throw std::exception();
-
-    str = str.substr(res_str.size() + 2, str.size() - res_str.size() - 2);
-    return res_str;
-  } else
-    throw std::exception();
-}
-int GetInt(std::string& str) {
-  std::string text_number = GetTextNumber(str);
-  if (IntNotDouble(text_number)) {
-    str = str.substr(text_number.size(), str.size() - text_number.size());
-    return std::stoi(text_number);
-  } else
-    throw std::exception();
-}
-double GetDouble(std::string& str) {
-  std::string text_number = GetTextNumber(str);
-  if (!IntNotDouble(text_number)) {
-    str = str.substr(text_number.size(), str.size() - text_number.size());
-    return std::stof(GetTextNumber(str));
-  } else
-    throw std::exception();
-}
-bool GetBool(std::string& str) {
-  if (str.substr(0, 4) == "true") {
-    str = str.substr(4, str.size() - 4);
-    return 1;
   }
-
-  else if (str.substr(0, 5) == "false") {
-    str = str.substr(5, str.size() - 5);
-    return 0;
-  } else
-    throw std::exception();
-}
-auto GetNull(std::string& str) {
-  if (str.substr(0, 7) == NullName) {
-    str = str.substr(4, str.size() - 4);
-    return nullptr;
-  } else
-    throw std::exception();
-}
-char GetSymbol(std::string& str) {
-  if (str[0] == '{' || str[0] == '}' || str[0] == ':' || str[0] == ',' ||
-      str[0] == '[' || str[0] == ']') {
-    char res = str[0];
-    str = str.substr(1, str.size() - 1);
-
-    return res;
-  } else
-    throw std::exception();
+  return x;
 }
 
-std::any GetObject(std::vector<std::any>& tokens) {
-  std::string type_name = tokens[0].type().name();
-  int brack_counter = 0;
-
-  if (type_name == CharName) {
-    if (std::any_cast<char>(tokens[0]) == '{') {
-      brack_counter = 1;
-      auto iter = tokens.begin() + 1;
-
-      while (iter != tokens.end() && brack_counter > 0) {
-        std::string prom = iter->type().name();
-
-        if (prom == CharName) {
-          if (std::any_cast<char>(*iter) == '}')
-            brack_counter--;
-          else if (std::any_cast<char>(*iter) == '{')
-            brack_counter++;
-        }
-        iter++;
-      }
-
-      if (iter != tokens.end()) {
-        std::vector<std::any> including_tokens;
-        including_tokens.resize(iter - tokens.begin());
-
-        std::copy(tokens.begin(), iter, including_tokens.begin());
-        tokens.erase(tokens.begin(), iter);
-        return Json(including_tokens);
-      } else
+void Json::parse_object(const std::string& s, int& a, int& b) {
+  std::unordered_multimap<std::string, std::any> map;
+  while (true) {
+    std::string key = "";
+    std::any value = nullptr;
+    a = b + 1;
+    b = static_cast<int>(s.substr(a).find('\"') + a);
+    if (static_cast<int>(s.substr(a).find('\"')) == -1) {
+      if (map.empty()) {
+        b = s.substr(a).find('}') + a;
+        check_whitespace(s.substr(a, b - a));
+        break;
+      } else {
         throw std::exception();
-    } else if (std::any_cast<char>(tokens[0]) == '[') {
-      brack_counter = 1;
-      auto iter = tokens.begin() + 1;
-
-      while (iter != tokens.end() && brack_counter > 0) {
-        std::string prom = iter->type().name();
-
-        if (prom == CharName) {
-          if (std::any_cast<char>(*iter) == ']')
-            brack_counter--;
-          else if (std::any_cast<char>(*iter) == '[')
-            brack_counter++;
+      }
+    }
+    check_whitespace(s.substr(a, b - a));
+    a = b + 1;
+    b = static_cast<int>(s.substr(a).find('\"') + a);
+    //        if ((int)s.substr(a).find('\"') == -1)
+    //            throw std::exception();
+    key = s.substr(a, b - a);
+    a = b + 1;
+    b = static_cast<int>(s.substr(a).find(':') + a);
+    if (static_cast<int>(s.substr(a).find(':')) == -1) throw std::exception();
+    check_whitespace(s.substr(a, b - a));
+    a = b + 1;
+    b = static_cast<int>(s.substr(a).find_first_of("{[\"0123456789tfn-") + a);
+    //        if ((int)s.substr(a).find_first_of("{[\"0123456789tfn-") == -1)
+    //            throw std::exception();
+    check_whitespace(s.substr(a, b - a));
+    switch (s[b]) {
+      case '{': {
+        a = b;
+        b = find_end(s.substr(a, s.find_last_of('}') - a), '}') + b;
+        value = Json(s.substr(a, b - a + 1));
+        break;
+      }
+      case '[': {
+        a = b;
+        b = find_end(s.substr(a, s.find_last_of('}') - a), ']') + b;
+        value = Json(s.substr(a, b - a + 1));
+        break;
+      }
+      case '\"': {
+        a = b + 1;
+        b = static_cast<int>(s.substr(a).find('\"') + a);
+        if (static_cast<int>(s.substr(a).find('\"')) == -1)
+          throw std::exception();
+        value = s.substr(a, b - a);
+        break;
+      }
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+      case '-': {
+        a = b;
+        b = static_cast<int>(s.substr(a).find_first_of(" \t\n,}]") + a);
+        //                if ((int)s.substr(a).find_first_of(" \t\n,}]") == -1)
+        //                    throw std::exception();
+        b--;
+        if (static_cast<int>(
+                s.substr(a + 1, b - a).find_first_not_of("0123456789")) == -1) {
+          value = get_int(s.substr(a, b - a + 1));
+        } else {
+          if (static_cast<int>(s.substr(a + 1, b - a)
+                                   .find_first_not_of("0123456789.eE+-")) != -1)
+            throw std::exception();
+          if (static_cast<int>(s.substr(a + 1, b - a).find('.')) != -1) {
+            int c = static_cast<int>(s.substr(a + 1, b - a).find('.') + a + 1);
+            //                        if ((int)s.substr(c + 1, b - c).find('.')
+            //                        != -1)
+            //                            throw std::exception();
+            if (static_cast<int>(
+                    s.substr(c - 1, 1).find_first_not_of("0123456789")) != -1 ||
+                static_cast<int>(
+                    s.substr(c + 1, 1).find_first_not_of("0123456789")) != -1)
+              throw std::exception();
+          }
+          if (static_cast<int>(s.substr(a + 1, b - a).find_first_of("+-")) !=
+              -1) {
+            int c = static_cast<int>(
+                s.substr(a + 1, b - a).find_first_of("+-") + a + 1);
+            if (!(s[c - 1] == 'e' || s[c - 1] == 'E')) throw std::exception();
+          }
+          if (static_cast<int>(s.substr(a + 1, b - a).find_first_of("eE")) !=
+              -1) {
+            int c = static_cast<int>(
+                s.substr(a + 1, b - a).find_first_of("eE") + a + 1);
+            if (static_cast<int>(s.substr(c + 1, b - c).find_first_of("eE")) !=
+                -1)
+              throw std::exception();
+          }
+          value = get_double(s.substr(a, b - a + 1));
         }
-        iter++;
+        break;
       }
+      case 't':
+      case 'f': {
+        a = b;
+        value = get_bool(s.substr(a), b);
+        break;
+      }
+      case 'n': {
+        a = b;
+        if (s.substr(a, 4) == "null") {
+          b += 3;
+          value = nullptr;
+        } else {
+          throw std::exception();
+        }
+      }
+    }
+    map.insert({key, value});
+    a = b + 1;
+    b = static_cast<int>(s.substr(a).find_first_of(",}") + a);
+    if (static_cast<int>(s.substr(a).find_first_of(",}")) == -1)
+      throw std::exception();
+    if (s[b] == '}') {
+      check_whitespace(s.substr(a, b - a));
+      break;
+    } else {
+      check_whitespace(s.substr(a, b - a));
+    }
+  }
+  if (!map.empty()) json_map = map;
+}
 
-      if (iter != tokens.end()) {
-        std::vector<std::any> including_tokens;
-        including_tokens.resize(iter - tokens.begin());
-
-        std::copy(tokens.begin(), iter, including_tokens.begin());
-        tokens.erase(tokens.begin(), iter);
-        return Json(including_tokens);
-      } else
+void Json::parse_array(const std::string& s, int& a, int& b) {
+  std::vector<std::any> vector;
+  while (true) {
+    std::any value = nullptr;
+    a = b + 1;
+    b = static_cast<int>(s.substr(a).find_first_of("{[\"0123456789tfn-") + a);
+    if (static_cast<int>(s.substr(a).find_first_of("{[\"0123456789tfn-")) ==
+        -1) {
+      if (vector.empty()) {
+        b = s.substr(a).find(']') + a;
+        check_whitespace(s.substr(a, b - a));
+        break;
+      } else {
         throw std::exception();
-    }
-  } else {
-    std::any result = tokens[0];
-    tokens.erase(tokens.begin());
-    std::cout << "Got element: " << result << std::endl;
-    return result;
-  }
-  return nullptr;
-}
-void ParceTokens(std::vector<std::any> tokens, std::any& data) {
-  if (std::any_cast<char>(tokens[0]) == '{') {
-    std::string key;
-    std::unordered_multimap<std::string, std::any> object_data;
-    try {
-      tokens.erase(tokens.begin());
-      while (tokens.size() > 0) {
-        key = std::any_cast<std::string>(tokens[0]);
-        std::cout << "Got key:     " << key << std::endl;  // marker
-        tokens.erase(tokens.begin());
-
-        if (std::any_cast<char>(tokens[0]) == ':')
-          tokens.erase(tokens.begin());
-        else
-          throw std::exception();
-
-        object_data.insert({key, GetObject(tokens)});
-
-        if (std::any_cast<char>(tokens[0]) == ',')
-          tokens.erase(tokens.begin());
-        else if (std::any_cast<char>(tokens[0]) == '}') {
-          tokens.erase(tokens.begin());
-          continue;
-        } else
-          throw std::exception();
-        std::cout << "_________________________" << std::endl;
       }
-    } catch (const std::exception&) {
-      throw std::exception();
     }
-    data = object_data;
-  } else if (std::any_cast<char>(tokens[0]) == '[') {
-    std::vector<std::any> mas_data;
-    try {
-      tokens.erase(tokens.begin());
-      while (tokens.size() > 1) {
-        mas_data.push_back(GetObject(tokens));
-
-        if (std::any_cast<char>(tokens[0]) == ',')
-          tokens.erase(tokens.begin());
-        else if (std::any_cast<char>(tokens[0]) == ']') {
-          tokens.erase(tokens.begin());
-          continue;
-        } else
+    check_whitespace(s.substr(a, b - a));
+    switch (s[b]) {
+      case '{': {
+        a = b;
+        b = find_end(s.substr(a, s.find_last_of(']') - a), '}') + b;
+        value = Json(s.substr(a, b - a + 1));
+        break;
+      }
+      case '[': {
+        a = b;
+        b = find_end(s.substr(a, s.find_last_of(']') - a), ']') + b;
+        value = Json(s.substr(a, b - a + 1));
+        break;
+      }
+      case '\"': {
+        a = b + 1;
+        b = static_cast<int>(s.substr(a).find('\"') + a);
+        if (static_cast<int>(s.substr(a).find('\"')) == -1)
           throw std::exception();
+        value = s.substr(a, b - a);
+        break;
       }
-    } catch (const std::exception&) {
-      throw std::exception();
-    }
-
-    data = mas_data;
-  } else {
-    throw std::exception();
-  }
-}
-
-// Функция, преобразующая строку в вектор токенов
-std::vector<std::any> TakeTokens(std::string str) {
-  std::vector<std::any> tokens;
-
-  while (str.size() > 0) {
-    try {
-      tokens.push_back(GetString(str));
-      continue;
-    } catch (const std::exception&) {
-    }
-    try {
-      tokens.push_back(GetInt(str));
-      continue;
-    } catch (const std::exception&) {
-    }
-    try {
-      tokens.push_back(GetDouble(str));
-      continue;
-    } catch (const std::exception&) {
-    }
-    try {
-      tokens.push_back(GetBool(str));
-      continue;
-    } catch (const std::exception&) {
-    }
-    try {
-      tokens.push_back(GetNull(str));
-      continue;
-    } catch (const std::exception&) {
-    }
-    try {
-      tokens.push_back(GetSymbol(str));
-      continue;
-    } catch (const std::exception&) {
-    }
-    try {
-      if (str[0] == ' ' || str[0] == '\n') {
-        str = str.substr(1, str.size() - 1);
-        continue;
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+      case '-': {
+        a = b;
+        b = static_cast<int>(s.substr(a).find_first_of(" \t\n,}]") + a);
+        //                if ((int)s.substr(a).find_first_of(" \t\n,}]") == -1)
+        //                    throw std::exception();
+        b--;
+        if (static_cast<int>(
+                s.substr(a + 1, b - a).find_first_not_of("0123456789")) == -1) {
+          value = get_int(s.substr(a, b - a + 1));
+        } else {
+          if (static_cast<int>(s.substr(a + 1, b - a)
+                                   .find_first_not_of("0123456789.eE+-")) != -1)
+            throw std::exception();
+          if (static_cast<int>(s.substr(a + 1, b - a).find('.')) != -1) {
+            int c = static_cast<int>(s.substr(a + 1, b - a).find('.') + a + 1);
+            if (static_cast<int>(s.substr(c + 1, b - c).find('.')) != -1)
+              throw std::exception();
+            if (static_cast<int>(
+                    s.substr(c - 1, 1).find_first_not_of("0123456789")) != -1 ||
+                static_cast<int>(
+                    s.substr(c + 1, 1).find_first_not_of("0123456789")) != -1)
+              throw std::exception();
+          }
+          if (static_cast<int>(s.substr(a + 1, b - a).find_first_of("+-")) !=
+              -1) {
+            int c = static_cast<int>(
+                s.substr(a + 1, b - a).find_first_of("+-") + a + 1);
+            if (!(s[c - 1] == 'e' || s[c - 1] == 'E')) throw std::exception();
+          }
+          if (static_cast<int>(s.substr(a + 1, b - a).find_first_of("eE")) !=
+              -1) {
+            int c = static_cast<int>(
+                s.substr(a + 1, b - a).find_first_of("eE") + a + 1);
+            if (static_cast<int>(s.substr(c + 1, b - c).find_first_of("eE")) !=
+                -1)
+              throw std::exception();
+          }
+          value = get_double(s.substr(a, b - a + 1));
+        }
+        break;
       }
-    } catch (const std::exception&) {
+      case 't':
+      case 'f': {
+        a = b;
+        value = get_bool(s.substr(a), b);
+        break;
+      }
+      case 'n': {
+        a = b;
+        if (s.substr(a, 4) == "null") {
+          b += 3;
+          value = nullptr;
+        } else {
+          throw std::exception();
+        }
+      }
     }
-    throw std::exception();
+    vector.push_back(value);
+    a = b + 1;
+    b = static_cast<int>(s.substr(a).find_first_of(",]") + a);
+    //        if ((int)s.substr(a).find_first_of(",]") == -1)
+    //            throw std::exception();
+    if (s[b] == ']') {
+      check_whitespace(s.substr(a, b - a));
+      break;
+    } else {
+      check_whitespace(s.substr(a, b - a));
+    }
   }
-
-  std::cout << "Tokens: ";
-  for (auto it = tokens.begin(); it != tokens.end(); it++)
-    std::cout << "'" << *it << "', ";
-
-  std::cout << std::endl;
-
-  return tokens;
+  if (!vector.empty()) json_map = vector;
 }
 
-// Конструктор из строки, содержащей Json-данные.
-Json::Json(const std::string& s) { ParceTokens(TakeTokens(s), data); }
+Json::Json(const std::string& s) {
+  check_str(s);
+  int a = 0, b = 0;
+  a = b = s.find_first_of("{[");
+  if (s[a] == '{')
+    parse_object(s.substr(a), a, b);
+  else
+    parse_array(s.substr(a), a, b);
+}
 
-// Конструктор из набора токенов, содержащего Json-данные.
-Json::Json(const std::vector<std::any>& tokens) { ParceTokens(tokens, data); }
-
-// Метод возвращает true, если данный экземпляр содержит в себе JSON-массив.
-// Иначе false.
 bool Json::is_array() const {
-  try {
-    std::vector<std::any> object_data =
-        std::any_cast<std::vector<std::any>>(data);
-  } catch (const std::bad_any_cast&) {
-    return 0;
-  }
-  return 1;
-}
-// Метод возвращает true, если данный экземпляр содержит в себе JSON-объект.
-// Иначе false.
-bool Json::is_object() const {
-  try {
-    std::unordered_multimap<std::string, std::any> mas_data =
-        std::any_cast<std::unordered_multimap<std::string, std::any>>(data);
-  } catch (const std::bad_any_cast&) {
-    return 0;
-  }
-  return 1;
+  if (json_map.type() == typeid(std::vector<std::any>))
+    return true;
+  else
+    return false;
 }
 
-// Метод возвращает значение по ключу key, если экземпляр является
-// JSON-объектом. Значение может иметь один из следующих типов: Json,
-// std::string, double, bool или быть пустым. Если экземпляр является
-// JSON-массивом, генерируется исключение.
+bool Json::is_object() const {
+  if (json_map.type() == typeid(std::unordered_multimap<std::string, std::any>))
+    return true;
+  else
+    return false;
+}
+
 std::any Json::operator[](const std::string& key) {
   if (this->is_object()) {
-    auto object_data =
-        std::any_cast<std::unordered_multimap<std::string, std::any>>(data);
-    std::any prom = object_data.find(key)->second;
-
-    return prom;
+    auto object =
+        std::any_cast<std::unordered_multimap<std::string, std::any>>(json_map);
+    std::any value = object.find(key)->second;
+    return value;
   } else {
     throw std::exception();
   }
 }
 
-// Метод возвращает значение по индексу index, если экземпляр является
-// JSON-массивом. Значение может иметь один из следующих типов: Json,
-// std::string, double, bool или быть пустым. Если экземпляр является
-// JSON-объектом, генерируется исключение.
 std::any Json::operator[](int index) {
   if (this->is_array()) {
-    std::vector<std::any> mas_data = std::any_cast<std::vector<std::any>>(data);
-    return mas_data[index];
+    auto array = std::any_cast<std::vector<std::any>>(json_map);
+    return array[index];
   } else {
     throw std::exception();
   }
 }
 
-// Метод возвращает объект класса Json из строки, содержащей Json-данные.
-Json Json::parse(const std::string& s) { return Json(s); }
-
-// Метод возвращает объекта класса Json из файла, содержащего Json-данные в
-// текстовом формате.
-Json Json::parseFile(const std::string& path_to_file) {
-  std::string prom, s = "";
-  std::ifstream file(path_to_file);
-
-  if (file.is_open())
-    while (getline(file, prom)) s += prom;
-  else {
-    // throw exception
-  }
-
-  return Json(s);
+Json Json::parse(const std::string& s) {
+  Json A(s);
+  return A;
 }
